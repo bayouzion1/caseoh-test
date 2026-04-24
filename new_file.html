@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>灵魂契合度测试</title>
+<style>
+  :root {
+    --bg: #F0F4FF;
+    --card: #FFFFFF;
+    --primary: #5B7FFF;
+    --primary-dark: #4A6DE5;
+    --accent: #A29BFE;
+    --text: #2D3436;
+    --text-light: #636E72;
+    --border: #E0E7FF;
+    --shadow: rgba(91, 127, 255, 0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(180deg, #F0F4FF 0%, #F8F9FF 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .container {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 28px;
+    box-shadow: 0 12px 40px var(--shadow);
+    padding: 36px 26px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hidden { display: none !important; }
+  .page { animation: fadeIn 0.5s ease; }
+
+  /* 封面 */
+  .cover { text-align: center; }
+  .cover-icon { font-size: 56px; margin-bottom: 18px; filter: drop-shadow(0 4px 8px rgba(91,127,255,0.2)); }
+  .cover h1 { font-size: 26px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px; color: var(--primary-dark); }
+  .cover p { color: var(--text-light); font-size: 14px; line-height: 1.7; margin-bottom: 32px; }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 15px 0;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(91, 127, 255, 0.28);
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-align: center;
+    text-decoration: none;
+  }
+  .btn:active { transform: scale(0.98); box-shadow: 0 3px 12px rgba(91, 127, 255, 0.18); }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary-dark);
+    border: 2px solid var(--border);
+    box-shadow: none;
+    margin-top: 12px;
+  }
+
+  /* 进度条 */
+  .progress-bar {
+    height: 6px;
+    background: #EDF1FF;
+    border-radius: 3px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .question-index {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 6px;
+    text-align: right;
+  }
+
+  /* 题目 */
+  .question-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.65;
+    margin-bottom: 22px;
+    min-height: 56px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .option:hover { border-color: var(--primary); background: #F5F7FF; }
+  .option:active { transform: scale(0.99); }
+
+  /* 结果页 */
+  .result-type {
+    text-align: center;
+    background: linear-gradient(135deg, #F0F3FF, #F8F9FF);
+    border-radius: 20px;
+    padding: 24px 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .result-type .label { font-size: 13px; color: var(--text-light); margin-bottom: 6px; }
+  .result-type .type-name { font-size: 22px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+  .result-type .type-desc { font-size: 14px; color: var(--text); line-height: 1.6; }
+
+  .result-match { text-align: center; margin-bottom: 20px; }
+  .result-match .sub { font-size: 14px; color: var(--text-light); margin-bottom: 8px; }
+  .result-match .name { font-size: 32px; font-weight: 700; background: linear-gradient(90deg, var(--primary-dark), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; margin-bottom: 4px; }
+  .result-match .hint { font-size: 13px; color: var(--text-light); }
+
+  .qrcode { text-align: center; margin: 20px 0; }
+  .qrcode img { width: 180px; height: 180px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .qrcode-caption { font-size: 12px; color: var(--text-light); margin-top: 10px; }
+
+  /* 装饰 */
+  .deco { position: absolute; width: 160px; height: 160px; background: radial-gradient(circle, rgba(91,127,255,0.10), transparent 70%); border-radius: 50%; pointer-events: none; }
+  .deco-top { top: -50px; right: -50px; }
+  .deco-bottom { bottom: -50px; left: -50px; }
+
+  /* 过渡 */
+  .fade-enter { animation: fadeIn 0.4s ease; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="deco deco-top"></div>
+  <div class="deco deco-bottom"></div>
+
+  <!-- 封面 -->
+  <div id="page-cover" class="page cover">
+    <div class="cover-icon">🔮</div>
+    <h1>灵魂契合度测试</h1>
+    <p>10道沉浸式情景题，穿透表象<br>测出你灵魂深处真正渴望的另一半</p>
+    <button class="btn" onclick="goToQuestion(0)">开始测试</button>
+  </div>
+
+  <!-- 答题页 -->
+  <div id="page-quiz" class="page hidden">
+    <div class="question-index" id="q-index">1 / 10</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="question-title" id="q-title"></div>
+    <div class="options" id="q-options"></div>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="page-result" class="page hidden">
+    <div class="result-type">
+      <div class="label">根据你的选择，你的心动类型是</div>
+      <div class="type-name" id="result-type-name">--</div>
+      <div class="type-desc" id="result-type-desc">--</div>
+    </div>
+    <div class="result-match">
+      <div class="sub">而系统为你匹配到的理想对象是</div>
+      <div class="name">邹凌睿</div>
+      <div class="hint">契合度 99.9% · 灵魂共振指数 SSR</div>
+    </div>
+    <div class="qrcode">
+		<img src="img/wx.png" alt="">
+		<div class="qrcode-caption">扫码添加好友，开启专属副本</div>
+    </div>
+    <button class="btn" onclick="goHome()">再测一次</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    title: "在你踏入这场测试之前，宇宙需要确认你的初始身份：",
+    options: [
+      { text: "男", value: "A" },
+      { text: "女", value: "B" }
+    ]
+  },
+  {
+    title: "假设你和TA在深夜便利店偶遇。TA拿起货架上最后一盒草莓牛奶，转身对你说：'你也想要吗？' 你的下意识反应是？",
+    options: [
+      { text: "'没关系，你拿着吧' —— 默默让出", value: "A" },
+      { text: "'那我们一起喝？' —— 试探靠近", value: "B" },
+      { text: "'其实我喜欢巧克力味' —— 曲线暗示", value: "C" },
+      { text: "直接扫码把两盒都买下来 —— 直球进攻", value: "D" }
+    ]
+  },
+  {
+    title: "周末清晨，你收到一条消息：'我梦到你了，但醒来发现枕头湿了。' 你会怎么回？",
+    options: [
+      { text: "'是流口水还是眼泪？' —— 幽默化解", value: "A" },
+      { text: "'那下次梦里提醒我撑伞' —— 温柔接住", value: "B" },
+      { text: "'我在现实里，不用梦' —— 反撩", value: "C" },
+      { text: "'展开说说，我备着瓜子' —— 八卦模式", value: "D" }
+    ]
+  },
+  {
+    title: "你们约好看日落，但TA迟到半小时。夕阳快没了，TA气喘吁吁跑来，手里拎着两杯冰美式。你会？",
+    options: [
+      { text: "接过咖啡，说'下次提前告诉我，我帮你留位置'", value: "A" },
+      { text: "笑着抱怨'再晚一点就只能看星星了'", value: "B" },
+      { text: "直接牵起TA的手往观景台跑'还有五分钟'", value: "C" },
+      { text: "打开咖啡喝一口'罚你明天再陪我看一次'", value: "D" }
+    ]
+  },
+  {
+    title: "TA突然问你：'如果我们是手机APP，你觉得我是什么？' 你的答案是？",
+    options: [
+      { text: "相机 —— 因为你总让我想起美好画面", value: "A" },
+      { text: "闹钟 —— 因为你总能叫醒我的心动", value: "B" },
+      { text: "天气 —— 因为你决定我一天的心情", value: "C" },
+      { text: "备忘录 —— 因为我所有重要的事都关于你", value: "D" }
+    ]
+  },
+  {
+    title: "吵架冷战第三天，你在家门口发现一个纸箱，里面是你提过想吃的蛋糕，便利贴写：'过期前记得吃，我也是。' 你？",
+    options: [
+      { text: "拍照发给TA：'蛋糕和人都不过期'", value: "A" },
+      { text: "切一块放在门口：'一起吃就不过期'", value: "B" },
+      { text: "抱着蛋糕去敲TA的门", value: "C" },
+      { text: "回复：'那你要不要来检查一下保质期'", value: "D" }
+    ]
+  },
+  {
+    title: "TA送给你一本旧书，扉页上写了一段话。你回家才发现那段话刚好对应你上周朋友圈发过的歌词。你的感受是？",
+    options: [
+      { text: "被监视了？不对，是被在乎了", value: "A" },
+      { text: "立刻拍照发朋友圈仅TA可见", value: "B" },
+      { text: "翻完整本书找还有没有别的线索", value: "C" },
+      { text: "给TA发消息：'你是不是暗恋我？'", value: "D" }
+    ]
+  },
+  {
+    title: "你们在拥挤的地铁上，TA站在你身后，没有扶手。列车急刹时TA为了扶住你，手撑在你耳边的玻璃上。你会？",
+    options: [
+      { text: "低头假装看鞋尖，但耳朵红了", value: "A" },
+      { text: "抬头说'这位乘客，请你扶好'", value: "B" },
+      { text: "悄悄把肩膀往TA那边靠一点", value: "C" },
+      { text: "转头问'你是在拍偶像剧吗'", value: "D" }
+    ]
+  },
+  {
+    title: "TA的社交平台突然发了一张照片：空荡的电影院，两张票根，其中一张画了你的简笔画。配文是'被放鸽子了'。你？",
+    options: [
+      { text: "立刻私聊：'地址，我马上到'", value: "A" },
+      { text: "评论：'这只鸽子飞回来了'", value: "B" },
+      { text: "画一张TA的简笔画回敬", value: "C" },
+      { text: "保存图片，设为聊天背景", value: "D" }
+    ]
+  },
+  {
+    title: "最后一个问题。如果爱情是一道菜，你希望TA是你餐桌上的？",
+    options: [
+      { text: "白米饭 —— 平淡但每一顿都需要", value: "A" },
+      { text: "火锅 —— 热烈且永远有新鲜感", value: "B" },
+      { text: "深夜泡面 —— 罪恶但无可替代的快乐", value: "C" },
+      { text: "家传秘方 —— 别人吃不到，只给我做", value: "D" }
+    ]
+  }
+];
+
+const typeMap = {
+  A: {
+    name: "温润如玉型",
+    desc: "你偏爱那种像春日午后阳光一样的人。不刺眼，却足够暖。你会被细节里的温柔击中，比如递来的半杯奶茶、下雨时偏向你的伞。"
+  },
+  B: {
+    name: "浪漫至死型",
+    desc: "你对仪式感毫无抵抗力。你渴望有人把普通的日子过成诗，在凌晨三点说想你，在烂俗的电影情节里偷偷牵住你的手。"
+  },
+  C: {
+    name: "暗流涌动型",
+    desc: "你喜欢棋逢对手的感觉。暧昧期的推拉、欲言又止的眼神、彼此试探的边界，对你来说比直白的告白更致命。"
+  },
+  D: {
+    name: "直球天然型",
+    desc: "你讨厌猜谜游戏。真诚、直接、甚至有点笨拙的勇敢最打动你。你觉得爱就是'我喜欢你，所以我要让你知道'。"
+  }
+};
+
+let current = 0;
+let answers = [];
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function goHome() {
+  current = 0;
+  answers = [];
+  showPage('page-cover');
+}
+
+function renderQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById('q-index').innerText = (idx+1) + ' / ' + questions.length;
+  document.getElementById('progress-fill').style.width = ((idx+1)/questions.length*100) + '%';
+  document.getElementById('q-title').innerText = q.title;
+  const optsDiv = document.getElementById('q-options');
+  optsDiv.innerHTML = '';
+  q.options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerText = opt.text;
+    div.onclick = () => handleAnswer(opt.value);
+    optsDiv.appendChild(div);
+  });
+}
+
+function handleAnswer(value) {
+  answers.push(value);
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    const quiz = document.getElementById('page-quiz');
+    quiz.style.animation = 'none';
+    void quiz.offsetWidth;
+    renderQuestion(current);
+    quiz.style.animation = 'fadeIn 0.4s ease';
+  }
+}
+
+function showResult() {
+  // 统计 A/B/C/D（跳过第一题性别题）
+  const stats = { A:0, B:0, C:0, D:0 };
+  for (let i = 1; i < answers.length; i++) {
+    const v = answers[i];
+    if (stats[v] !== undefined) stats[v]++;
+  }
+  let best = 'A';
+  if (stats.B > stats[best]) best = 'B';
+  if (stats.C > stats[best]) best = 'C';
+  if (stats.D > stats[best]) best = 'D';
+  const t = typeMap[best];
+  document.getElementById('result-type-name').innerText = t.name;
+  document.getElementById('result-type-desc').innerText = t.desc;
+  showPage('page-result');
+}
+
+function goToQuestion(idx) {
+  current = idx;
+  answers = [];
+  renderQuestion(idx);
+  showPage('page-quiz');
+}
+</script>
+
+</body>
+</html>
